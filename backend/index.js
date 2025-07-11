@@ -11,8 +11,8 @@ app.use(express.json());
 // Routes
 app.get("/api/ping", (req, res) => res.json({ message: "pong" }));
 app.get("/api/greet", (req, res) => {
-  const name = req.query.name || "World";
-  res.json({ message: `Hello, ${name}!` });
+  const name = req.query.name || "Mundo";          // valor por defecto
+  res.json({ message: `¡Hola, ${name}!` });        // ← español y signos
 });
 app.get("/api/students", async (req, res) => {
   try {
