@@ -1,48 +1,55 @@
-
-async function loadStudents() {
-  const resp   = await fetch("/api/students");
-  const data   = await resp.json();
-  const tbody  = document.querySelector("#studentsTable tbody");
-
+document.getElementById("loadButton").addEventListener("click", async () => {
+  const response = await fetch("/api/students");
+  const students = await response.json();
+  const tbody = document.querySelector("#studentsTable tbody");
   tbody.innerHTML = "";
-  data.forEach(({ id, name }) => {
+  students.forEach((student) => {
     const row = document.createElement("tr");
-    row.innerHTML = `<td>${id}</td><td>${name}</td>`;
+    row.innerHTML = `<td>${student.id}</td><td>${student.name}</td>`;
     tbody.appendChild(row);
   });
-}
+  document.getElementById('greetButton').addEventListener('click', async () => {
+  const name = document.getElementById('nameInput').value;
+
+  try {
+    const response = await fetch(`/api/greet?name=${encodeURIComponent(name)}`);
+    
+    if (!response.ok) {
+      throw new Error('El servidor no respondió correctamente');
+    }
+
+    const data = await response.json();
+    document.getElementById('greetMessage').textContent = data.message;
+  } catch (error) {
+    document.getElementById('greetMessage').textContent = 'Error al saludar 😢';
+    console.error('Error al saludar:', error);
+  }
+});
 
 
-document
-  .getElementById("loadButton")
-  .addEventListener("click", loadStudents);
+document.getElementById('formAgregarEstudiante').addEventListener('submit', async (event) => {
+  event.preventDefault(); // Evita que se recargue la página
 
+  const nuevoNombre = document.getElementById('nuevoNombre').value;
 
-document
-  .getElementById("addStudentForm")
-  .addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const nameInput = document.getElementById("studentName");
-    const name      = nameInput.value.trim();
-    if (!name) return;
-
-    await fetch("/api/students", {
-      method : "POST",
-      headers: { "Content-Type": "application/json" },
-      body   : JSON.stringify({ name })
-    });
-
-    nameInput.value = "";
-    await loadStudents();          // refresco la tabla al instante
+  const response = await fetch('/api/students', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name: nuevoNombre })
   });
 
+  const data = await response.json();
 
-document
-  .getElementById("greetButton")
-  .addEventListener("click", async () => {
-    const name = document.getElementById("nameInput").value.trim();
-    const resp = await fetch(`/api/greet?name=${encodeURIComponent(name)}`);
-    const { message } = await resp.json();
-    document.getElementById("greetResult").innerText = message;
-  });
+  if (response.ok) {
+    document.getElementById('mensajeAgregado').textContent = `Estudiante ${data.name} agregado con éxito`;
+  } else {
+    document.getElementById('mensajeAgregado').textContent = `Error: ${data.message}`;
+  }
+});
+
+});
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('loadButton').click();
+});
