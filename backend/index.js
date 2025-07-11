@@ -5,6 +5,10 @@ const db = require("./db");
 const app = express();
 const port = 4000;
 
+const { Pool } = require('pg');
+const pool = new Pool();          // usa variables de entorno PG*
+
+
 // Middleware to parse JSON requests
 app.use(express.json());
 
