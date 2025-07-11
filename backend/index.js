@@ -1,8 +1,6 @@
 const express = require("express");
 const db = require("./db");
 
-const { Pool } = require('pg');
-module.exports = new Pool();  
 
 // Define express app
 const app = express();
