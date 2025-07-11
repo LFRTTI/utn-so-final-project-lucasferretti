@@ -9,7 +9,10 @@ app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
 
-
+app.get('/api/greet', (req, res) => {
+  const name = req.query.name || 'desconocido';
+  res.json({ message: `¡Hola, ${name}!` });
+});
 
 // Middleware to parse JSON requests
 app.use(express.json());
