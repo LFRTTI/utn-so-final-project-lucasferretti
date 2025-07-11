@@ -25,10 +25,7 @@ app.get("/api/students", async (req, res) => {
     res.status(500).send("DB error");
   }
 });
-app.get('/api/greet', (req, res) => {
-  const name = req.query.name || 'desconocido';
-  res.json({ message: `¡Hola, ${name}!` });
-});
+
 
 app.post("/api/students", async (req, res) => {
   const { name } = req.body;
