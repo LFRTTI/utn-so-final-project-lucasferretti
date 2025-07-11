@@ -1,13 +1,11 @@
-
-import pkg from 'pg';
-const { Pool } = pkg;
+const { Pool } = require("pg");
 
 const db = new Pool({
-  user:     process.env.PGUSER,
-  host:     process.env.PGHOST ?? 'postgres',
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
   database: process.env.PGDATABASE,
   password: process.env.PGPASSWORD,
-  port:     Number(process.env.PGPORT || 5432),
+  port: process.env.PGPORT,
 });
 
-export default db;
+module.exports = db;
