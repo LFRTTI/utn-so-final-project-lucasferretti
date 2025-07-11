@@ -1,35 +1,55 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Estudiantes</title>
-    <link rel="stylesheet" href="styles_modern.css">
+document.getElementById("loadButton").addEventListener("click", async () => {
+  const response = await fetch("/api/students");
+  const students = await response.json();
+  const tbody = document.querySelector("#studentsTable tbody");
+  tbody.innerHTML = "";
+  students.forEach((student) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td>${student.id}</td><td>${student.name}</td>`;
+    tbody.appendChild(row);
+  });
+  document.getElementById('greetButton').addEventListener('click', async () => {
+  const name = document.getElementById('nameInput').value;
 
-  </head>
-  <body>
-    <h1>Lista de Estudiantes</h1>
-    <div>
-    <input type="text" id="nameInput" placeholder="Escribí tu nombre" />
-    <button id="greetButton">Saludarme</button>
-    <p id="greetMessage"></p>
-    </div>
-    <h2>Agregar Estudiante</h2>
-    <form id="formAgregarEstudiante">
-      <input type="text" id="nuevoNombre" placeholder="Nombre del estudiante" required />
-      <button type="submit">Agregar</button>
-    </form>
-    <p id="mensajeAgregado"></p>
+  try {
+    const response = await fetch(`/api/greet?name=${encodeURIComponent(name)}`);
+    
+    if (!response.ok) {
+      throw new Error('El servidor no respondió correctamente');
+    }
 
-    <button id="loadButton">Cargar Estudiantes</button>
-    <table id="studentsTable">
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Nombre</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <script src="script.js"></script>
-  </body>
-</html>
+    const data = await response.json();
+    document.getElementById('greetMessage').textContent = data.message;
+  } catch (error) {
+    document.getElementById('greetMessage').textContent = 'Error al saludar 😢';
+    console.error('Error al saludar:', error);
+  }
+});
+
+
+document.getElementById('formAgregarEstudiante').addEventListener('submit', async (event) => {
+  event.preventDefault(); // Evita que se recargue la página
+
+  const nuevoNombre = document.getElementById('nuevoNombre').value;
+
+  const response = await fetch('/api/students', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name: nuevoNombre })
+  });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    document.getElementById('mensajeAgregado').textContent = `Estudiante ${data.name} agregado con éxito`;
+  } else {
+    document.getElementById('mensajeAgregado').textContent = `Error: ${data.message}`;
+  }
+});
+
+});
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('loadButton').click();
+});
